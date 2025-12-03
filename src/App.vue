@@ -1,16 +1,20 @@
 <template>
   <div id="app">
-    <AuthLogin/>
+    <!-- <AuthLogin/> -->
+    <nav class="navbar">
+      <router-link to="/auth">去登录</router-link> |
+    </nav>
+    <main class="main-content">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script>
-import AuthLogin from './views/AuthLogin.vue'
 
 export default {
   name: 'App',
   components: {
-    AuthLogin
   }
 }
 </script>

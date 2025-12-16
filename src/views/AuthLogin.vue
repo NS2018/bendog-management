@@ -7,11 +7,15 @@
           <h3>Sign In</h3>
           <p>Please sign in to continue to Voler.</p>
         </div>
-        <form action="index.html">
+        <form action="index.html" @submit.prevent="handleLogin">
           <div class="form-group position-relative has-icon-left">
             <label for="username">Username</label>
             <div class="position-relative">
-              <input type="text" class="form-control" id="username" />
+              <input type="text" 
+                      class="form-control" 
+                      id="username" 
+                      v-model="form.username"
+                      required/>
               <div class="form-control-icon">
                 <i data-feather="user"></i>
               </div>
@@ -23,7 +27,11 @@
               <router-link to="/auth/forget-password"><small>Forgot password?</small></router-link>
             </div>
             <div class="position-relative">
-              <input type="text" class="form-control" id="password" />
+              <input type="text" 
+                      class="form-control" 
+                      id="password" 
+                      v-model="form.password" 
+                      required/>
               <div class="form-control-icon">
                 <i data-feather="lock"></i>
               </div>
@@ -32,7 +40,10 @@
 
           <div class="form-check clearfix my-4">
             <div class="checkbox float-left">
-              <input type="checkbox" id="checkbox1" class="form-check-input" />
+              <input type="checkbox" 
+              id="checkbox1" 
+              class="form-check-input" 
+              v-model="form.remember"/>
               <label for="checkbox1">Remember me</label>
             </div>
             <div class="float-right">
@@ -41,7 +52,9 @@
             </div>
           </div>
           <div class="clearfix">
-            <button class="btn btn-primary float-right">Submit</button>
+            <button class="btn btn-primary float-right" type="submit" :disabled="loading">
+              {{loading ? 'Signing in...' : 'Submit'}}
+            </button>
           </div>
         </form>
         <div class="divider">
@@ -65,8 +78,58 @@
 </template>
 
 <script>
+
+import request from '../utils/request'
+
 export default {
   name: "AuthLogin",
+  data(){
+    return {
+      form:{
+        username:'',
+        password:'',
+        remember: false
+      },
+      loading:false
+    }
+  },
+  methods:{
+    async handleLogin(){
+      this.loading = true;
+
+      if(!this.form.username || !this.form.password){
+        alert('Please enter both username and password.');
+        this.loading = false;
+        return;
+      }
+
+      try{
+        const response = await request.post('/login',{
+          username:this.form.username,
+          password:this.form.password,
+          remember:this.form.remember
+        });
+        const {data,code,msg} = response.data;
+        if(code === 200){
+          localStorage.setItem('token',data);
+        }else{
+          alert(msg)
+        }
+      }catch(error){
+        let message = 'Login failed. Please check your credentials.';
+        if (error.response) {
+          // 后端返回了错误状态（如 401、400）
+          message = error.response.data?.message || message;
+        } else if (error.request) {
+          // 网络错误（无响应）
+          message = 'Network error. Please check your connection.';
+        }
+        alert(message);
+      }finally{
+        this.loading = false;
+      }
+    }
+  }
 };
 </script>
 

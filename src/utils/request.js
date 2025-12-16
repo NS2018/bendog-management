@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const request = axios.create({
-    baseURL: process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000/api',
+    baseURL: process.env.NODE_ENV === 'production'
+        ? process.env.VUE_APP_API_BASE_URL  // 生产环境用真实地址
+        : '/api', // 开发环境走代理
     timeout: 10000,
 })
 

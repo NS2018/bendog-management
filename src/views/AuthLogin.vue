@@ -111,11 +111,16 @@ export default {
         });
         const {data,code,msg} = response.data;
         if(code === 200){
-          localStorage.setItem('token',data);
+          // localStorage.setItem('token',data);
+          this.$store.dispatch('auth/login',{'token':data,'user':''})
+          //跳转逻辑 跳转到指定路径
+          const redirect = this.$route.query.redirect || '/404';
+          this.$router.push({path:redirect});
         }else{
           alert(msg)
         }
       }catch(error){
+        console.log(error);
         let message = 'Login failed. Please check your credentials.';
         if (error.response) {
           // 后端返回了错误状态（如 401、400）

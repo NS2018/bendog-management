@@ -1,23 +1,11 @@
-import Vue from "vue";
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import auth from './modules/auth';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state:{
-        token: localStorage.getItem('token') || ''
-    },
-    getters:{
-        isAuthenticated: state => !!state.token
-    },
-    mutations:{
-        SET_TOKEN(state,token){
-            state.token = token
-            localStorage.setItem('token',token)
-        },
-        CLEAR_TOKEN(state){
-            state.token = ''
-            localStorage.removeItem('token')
-        }
-    }
-})
+  modules: {
+    auth
+  }
+});

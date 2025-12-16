@@ -16,7 +16,7 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home,
-        meta:{
+        meta: {
             requireAuth: true
         }
     },
@@ -24,12 +24,12 @@ const routes = [
         path: '/auth',
         name: 'Auth',
         component: Auth,
-        children:[
+        children: [
             {
                 path: 'login',
                 name: 'AuthLogin',
                 component: AuthLogin,
-                meta:{
+                meta: {
                     requireAuth: false
                 }
             },
@@ -37,7 +37,7 @@ const routes = [
                 path: 'register',
                 name: 'AuthRegister',
                 component: AuthRegister,
-                meta:{
+                meta: {
                     requireAuth: false
                 }
             },
@@ -45,7 +45,7 @@ const routes = [
                 path: 'forget-password',
                 name: 'AuthForgetPassword',
                 component: AuthForgetPassword,
-                meta:{
+                meta: {
                     requireAuth: false
                 }
             }
@@ -59,24 +59,21 @@ const router = new VueRouter({
     routes
 })
 
-function checkAuth(){
-    return store.getters.isAuthenticated
-}
-
-router.beforeEach((to,from,next) =>{
+router.beforeEach((to, from, next) => {
     const requireAuth = to.matched.some(record => record.meta.requireAuth)
-    const isLogged = checkAuth()
+    const isAuthenticated = store.getters['auth/isAuthenticated'];
 
-    if(requireAuth && !isLogged){
-        next('/auth/login')
-    }else if(!requireAuth && isLogged){
-        if(to.path == '/auth/login'){
-            next('/')
-        }else{
-            next()
+    console.log('isAuthenticated:', isAuthenticated);
+    console.log('requireAuth:', requireAuth);
+
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (!isAuthenticated) {
+            next({ name: 'Login', query: { redirect: to.fullPath } });
+        } else {
+            next();
         }
-    }else{
-        next()
+    } else {
+        next();
     }
 })
 
